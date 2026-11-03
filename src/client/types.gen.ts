@@ -5,6 +5,16 @@ export type ClientOptions = {
 };
 
 /**
+ * Body_files-upload_file
+ */
+export type Body_files_upload_file = {
+    /**
+     * File
+     */
+    file: Blob | File;
+};
+
+/**
  * Body_login-login_access_token
  */
 export type Body_login_login_access_token = {
@@ -32,6 +42,50 @@ export type Body_login_login_access_token = {
      * Client Secret
      */
     client_secret?: string | null;
+};
+
+/**
+ * FilePublic
+ */
+export type FilePublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Content Type
+     */
+    content_type: string;
+    /**
+     * Size
+     */
+    size: number;
+    /**
+     * Owner Id
+     */
+    owner_id: string;
+    /**
+     * Created At
+     */
+    created_at?: string | null;
+};
+
+/**
+ * FilesPublic
+ */
+export type FilesPublic = {
+    /**
+     * Data
+     */
+    data: Array<FilePublic>;
+    /**
+     * Count
+     */
+    count: number;
 };
 
 /**
@@ -920,6 +974,125 @@ export type itemsUpdateItemResponses = {
 };
 
 export type itemsUpdateItemResponse = itemsUpdateItemResponses[keyof itemsUpdateItemResponses];
+
+export type filesReadFilesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/files/';
+};
+
+export type filesReadFilesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type filesReadFilesError = filesReadFilesErrors[keyof filesReadFilesErrors];
+
+export type filesReadFilesResponses = {
+    /**
+     * Successful Response
+     */
+    200: FilesPublic;
+};
+
+export type filesReadFilesResponse = filesReadFilesResponses[keyof filesReadFilesResponses];
+
+export type filesUploadFileData = {
+    body: Body_files_upload_file;
+    path?: never;
+    query?: never;
+    url: '/api/v1/files/';
+};
+
+export type filesUploadFileErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type filesUploadFileError = filesUploadFileErrors[keyof filesUploadFileErrors];
+
+export type filesUploadFileResponses = {
+    /**
+     * Successful Response
+     */
+    200: FilePublic;
+};
+
+export type filesUploadFileResponse = filesUploadFileResponses[keyof filesUploadFileResponses];
+
+export type filesDeleteFileData = {
+    body?: never;
+    path: {
+        /**
+         * Id
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/files/{id}';
+};
+
+export type filesDeleteFileErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type filesDeleteFileError = filesDeleteFileErrors[keyof filesDeleteFileErrors];
+
+export type filesDeleteFileResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type filesDeleteFileResponse = filesDeleteFileResponses[keyof filesDeleteFileResponses];
+
+export type filesDownloadFileData = {
+    body?: never;
+    path: {
+        /**
+         * Id
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/files/{id}';
+};
+
+export type filesDownloadFileErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type filesDownloadFileError = filesDownloadFileErrors[keyof filesDownloadFileErrors];
+
+export type filesDownloadFileResponses = {
+    /**
+     * Successful Response
+     */
+    200: Blob | File;
+};
+
+export type filesDownloadFileResponse = filesDownloadFileResponses[keyof filesDownloadFileResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;

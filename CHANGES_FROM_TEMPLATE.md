@@ -21,9 +21,10 @@ Paths on the left are upstream paths; on the right, paths in this repository.
 
 ## Backend modules in the E2E stack (stage 3)
 
-| # | Change | Reason |
-|---|--------|--------|
-| M1 | `compose.e2e.yml`: `redis:7.2-alpine` service; the backend gets `REDIS_URL` and waits for Redis. | E2E tests run against the backend with its Redis cache enabled (backend change C1-C7). The OpenAPI schema did not change, so the client was not regenerated. |
+| #   | Change                                                                                                                                                                                                                                                                       | Reason                                                                                                                                                       |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| M1  | `compose.e2e.yml`: `redis:7.2-alpine` service; the backend gets `REDIS_URL` and waits for Redis.                                                                                                                                                                             | E2E tests run against the backend with its Redis cache enabled (backend change C1-C7). The OpenAPI schema did not change, so the client was not regenerated. |
+| M2  | `compose.e2e.yml`: S3 emulator (`motoserver/moto:5.2.5`) and bucket initializer (`amazon/aws-cli:2.39.3`); the backend gets the `S3_*` settings and fake emulator credentials. Client regenerated from backend `fadf54f` (adds `FilesService`; `src/client/SOURCE` updated). | E2E tests run against the backend with file storage enabled (backend change S1-S8). The file UI is a separate change.                                        |
 
 ## Removed from upstream (not copied)
 
