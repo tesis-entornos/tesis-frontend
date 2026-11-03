@@ -1,0 +1,102 @@
+# End-to-end test stack. The backend is consumed as an IMAGE (never as source code),
+# so every E2E run is tied to a backend image and a frontend image.
+#
+#   BACKEND_IMAGE=tesis-backend:local       (or registry/repo@sha256:...)
+#   FRONTEND_IMAGE=tesis-frontend:local     (built from this repo by default)
+#
+# Usage: ./scripts/run-e2e.sh
+services:
+  db:
+    image: postgres:18
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app"]
+      interval: 5s
+      retries: 10
+      start_period: 30s
+      timeout: 5s
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changethis}
+      - POSTGRES_DB=app
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+
+  prestart:
+    image: ${BACKEND_IMAGE:-tesis-backend:local}
+    pull_policy: never
+    depends_on:
+      db:
+        condition: service_healthy
+    command: bash scripts/prestart.sh
+    environment: &backend-env # development mode exposes the /private routes used by the E2E tests
+      FASTAPI_ENV: development
+      PROJECT_NAME: "Full Stack FastAPI Project"
+      SECRET_KEY: ${SECRET_KEY:-changethis}
+      FIRST_SUPERUSER: ${FIRST_SUPERUSER:-admin@example.com}
+      FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD:-changethis}
+      FRONTEND_HOST: http://edge
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_TLS: "false"
+      EMAILS_FROM_EMAIL: info@example.com
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changethis}@db:5432/app
+
+  backend:
+    image: ${BACKEND_IMAGE:-tesis-backend:local}
+    pull_policy: never
+    depends_on:
+      prestart:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+    environment: *backend-env
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8000/api/v1/utils/health-check/",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-tesis-frontend:local}
+    build:
+      context: .
+
+  # Emulates CloudFront path routing (see e2e/edge.conf)
+  edge:
+    image: nginx:1.28-alpine
+    volumes:
+      - ./e2e/edge.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    ports:
+      - "${EDGE_PORT:-8888}:80"
+
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    ipc: host
+    depends_on:
+      edge:
+        condition: service_started
+    environment:
+      FIRST_SUPERUSER: ${FIRST_SUPERUSER:-admin@example.com}
+      FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD:-changethis}
+      PLAYWRIGHT_BASE_URL: http://edge
+      VITE_API_URL: http://edge
+      MAILPIT_HOST: http://mailpit:8025
+      PLAYWRIGHT_HTML_HOST: 0.0.0.0
+      CI: ${CI:-}
+    volumes:
+      - ./blob-report:/app/blob-report
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
