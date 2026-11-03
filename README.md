@@ -30,6 +30,9 @@ BACKEND_IMAGE=<repo>@sha256:<digest> ./scripts/run-e2e.sh
 
 While the stack is up the app is available at <http://localhost:8888> (`EDGE_PORT`).
 
+The E2E stack includes Postgres, Mailpit, Redis and an S3 emulator (moto), so the tests exercise the
+cache and the file storage (`/files` page).
+
 ## Development server
 
 ```bash
