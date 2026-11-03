@@ -4,6 +4,9 @@
 #   BACKEND_IMAGE=tesis-backend:local       (or registry/repo@sha256:...)
 #   FRONTEND_IMAGE=tesis-frontend:local     (built from this repo by default)
 #
+# The backend runs in production mode (no FASTAPI_ENV), as in AWS. Secrets come
+# from E2E_* variables that scripts/run-e2e.sh generates for every run.
+#
 # Usage: ./scripts/run-e2e.sh
 services:
   db:
@@ -15,7 +18,7 @@ services:
       start_period: 30s
       timeout: 5s
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changethis}
+      - POSTGRES_PASSWORD=${E2E_POSTGRES_PASSWORD:?run scripts/run-e2e.sh}
       - POSTGRES_DB=app
 
   mailpit:
@@ -56,18 +59,17 @@ services:
       db:
         condition: service_healthy
     command: bash scripts/prestart.sh
-    environment: &backend-env # development mode exposes the /private routes used by the E2E tests
-      FASTAPI_ENV: development
+    environment: &backend-env
       PROJECT_NAME: "Full Stack FastAPI Project"
-      SECRET_KEY: ${SECRET_KEY:-changethis}
-      FIRST_SUPERUSER: ${FIRST_SUPERUSER:-admin@example.com}
-      FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD:-changethis}
+      SECRET_KEY: ${E2E_SECRET_KEY:?run scripts/run-e2e.sh}
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: ${E2E_SUPERUSER_PASSWORD:?run scripts/run-e2e.sh}
       FRONTEND_HOST: http://edge
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
       SMTP_TLS: "false"
       EMAILS_FROM_EMAIL: info@example.com
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changethis}@db:5432/app
+      DATABASE_URL: postgresql://postgres:${E2E_POSTGRES_PASSWORD:?run scripts/run-e2e.sh}@db:5432/app
       REDIS_URL: redis://redis:6379/0
       S3_BUCKET: tesis-files
       AWS_REGION: us-east-1
@@ -129,8 +131,8 @@ services:
       edge:
         condition: service_started
     environment:
-      FIRST_SUPERUSER: ${FIRST_SUPERUSER:-admin@example.com}
-      FIRST_SUPERUSER_PASSWORD: ${FIRST_SUPERUSER_PASSWORD:-changethis}
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: ${E2E_SUPERUSER_PASSWORD:?run scripts/run-e2e.sh}
       PLAYWRIGHT_BASE_URL: http://edge
       VITE_API_URL: http://edge
       MAILPIT_HOST: http://mailpit:8025

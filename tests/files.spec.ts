@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { expect, type Page, test } from "@playwright/test"
-import { createUser } from "./utils/privateApi"
+import { createUser } from "./utils/adminApi"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser } from "./utils/user"
 
