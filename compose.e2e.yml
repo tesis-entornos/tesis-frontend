@@ -21,6 +21,14 @@ services:
   mailpit:
     image: axllent/mailpit:v1.27
 
+  redis:
+    image: redis:7.2-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   prestart:
     image: ${BACKEND_IMAGE:-tesis-backend:local}
     pull_policy: never
@@ -40,6 +48,7 @@ services:
       SMTP_TLS: "false"
       EMAILS_FROM_EMAIL: info@example.com
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changethis}@db:5432/app
+      REDIS_URL: redis://redis:6379/0
 
   backend:
     image: ${BACKEND_IMAGE:-tesis-backend:local}
@@ -49,6 +58,8 @@ services:
         condition: service_completed_successfully
       mailpit:
         condition: service_started
+      redis:
+        condition: service_healthy
     environment: *backend-env
     healthcheck:
       test:

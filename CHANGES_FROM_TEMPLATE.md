@@ -19,6 +19,12 @@ Paths on the left are upstream paths; on the right, paths in this repository.
 | F10 | Committed `.env` → `.env.example` (adds `FIRST_SUPERUSER*` used by E2E tests); `.env` added to `.gitignore`; `.dockerignore` extended (`.env`, `.git`, test reports).                                                                                                                                                                         | Never commit environment files; keep images independent from local files.                                                                                                                              |
 | F11 | `README.md` replaced.                                                                                                                                                                                                                                                                                                                         | Instructions for this repository only.                                                                                                                                                                 |
 
+## Backend modules in the E2E stack (stage 3)
+
+| # | Change | Reason |
+|---|--------|--------|
+| M1 | `compose.e2e.yml`: `redis:7.2-alpine` service; the backend gets `REDIS_URL` and waits for Redis. | E2E tests run against the backend with its Redis cache enabled (backend change C1-C7). The OpenAPI schema did not change, so the client was not regenerated. |
+
 ## Removed from upstream (not copied)
 
 | Path                                                                                                                                                 | Reason                                                                                                 |
