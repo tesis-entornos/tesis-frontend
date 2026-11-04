@@ -99,13 +99,12 @@ services:
         condition: service_completed_successfully
     environment: *backend-env
     healthcheck:
+      # python instead of curl: the backend image (slim base) has no curl
       test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:8000/api/v1/utils/health-check/",
-        ]
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/utils/health-check/', timeout=4)"
       interval: 5s
       timeout: 5s
       retries: 10
