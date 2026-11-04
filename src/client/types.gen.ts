@@ -191,25 +191,28 @@ export type NewPassword = {
 };
 
 /**
- * PrivateUserCreate
+ * Readiness
  */
-export type PrivateUserCreate = {
+export type Readiness = {
     /**
-     * Email
+     * Status
      */
-    email: string;
+    status: 'ready' | 'not_ready';
+    checks: ReadinessChecks;
+};
+
+/**
+ * ReadinessChecks
+ */
+export type ReadinessChecks = {
     /**
-     * Password
+     * Database
      */
-    password: string;
+    database: string;
     /**
-     * Full Name
+     * Storage
      */
-    full_name: string;
-    /**
-     * Is Verified
-     */
-    is_verified?: boolean;
+    storage: string;
 };
 
 /**
@@ -826,6 +829,31 @@ export type utilsHealthCheckResponses = {
 
 export type utilsHealthCheckResponse = utilsHealthCheckResponses[keyof utilsHealthCheckResponses];
 
+export type utilsReadinessData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/utils/ready';
+};
+
+export type utilsReadinessErrors = {
+    /**
+     * Service Unavailable
+     */
+    503: Readiness;
+};
+
+export type utilsReadinessError = utilsReadinessErrors[keyof utilsReadinessErrors];
+
+export type utilsReadinessResponses = {
+    /**
+     * Successful Response
+     */
+    200: Readiness;
+};
+
+export type utilsReadinessResponse = utilsReadinessResponses[keyof utilsReadinessResponses];
+
 export type itemsReadItemsData = {
     body?: never;
     path?: never;
@@ -1093,28 +1121,3 @@ export type filesDownloadFileResponses = {
 };
 
 export type filesDownloadFileResponse = filesDownloadFileResponses[keyof filesDownloadFileResponses];
-
-export type privateCreateUserData = {
-    body: PrivateUserCreate;
-    path?: never;
-    query?: never;
-    url: '/api/v1/private/users/';
-};
-
-export type privateCreateUserErrors = {
-    /**
-     * Validation Error
-     */
-    422: HTTPValidationError;
-};
-
-export type privateCreateUserError = privateCreateUserErrors[keyof privateCreateUserErrors];
-
-export type privateCreateUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserPublic;
-};
-
-export type privateCreateUserResponse = privateCreateUserResponses[keyof privateCreateUserResponses];

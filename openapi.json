@@ -536,6 +536,32 @@
         }
       }
     },
+    "/api/v1/utils/ready": {
+      "get": {
+        "tags": ["utils"],
+        "summary": "Readiness",
+        "description": "Readiness: PostgreSQL (SELECT 1) and the S3 bucket (HeadBucket).\nRedis is not checked: the cache is fail-open.",
+        "operationId": "utils-readiness",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Readiness" }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Readiness" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/items/": {
       "get": {
         "tags": ["items"],
@@ -858,40 +884,6 @@
           }
         }
       }
-    },
-    "/api/v1/private/users/": {
-      "post": {
-        "tags": ["private"],
-        "summary": "Create User",
-        "description": "Create a new user.",
-        "operationId": "private-create_user",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/PrivateUserCreate" }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserPublic" }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1091,20 +1083,27 @@
         "required": ["token", "new_password"],
         "title": "NewPassword"
       },
-      "PrivateUserCreate": {
+      "Readiness": {
         "properties": {
-          "email": { "type": "string", "title": "Email" },
-          "password": { "type": "string", "title": "Password" },
-          "full_name": { "type": "string", "title": "Full Name" },
-          "is_verified": {
-            "type": "boolean",
-            "title": "Is Verified",
-            "default": false
-          }
+          "status": {
+            "type": "string",
+            "enum": ["ready", "not_ready"],
+            "title": "Status"
+          },
+          "checks": { "$ref": "#/components/schemas/ReadinessChecks" }
         },
         "type": "object",
-        "required": ["email", "password", "full_name"],
-        "title": "PrivateUserCreate"
+        "required": ["status", "checks"],
+        "title": "Readiness"
+      },
+      "ReadinessChecks": {
+        "properties": {
+          "database": { "type": "string", "title": "Database" },
+          "storage": { "type": "string", "title": "Storage" }
+        },
+        "type": "object",
+        "required": ["database", "storage"],
+        "title": "ReadinessChecks"
       },
       "Token": {
         "properties": {
