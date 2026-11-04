@@ -7,6 +7,9 @@ test.use({ storageState: { cookies: [], origins: [] } })
 
 const resetPath = "/reset-password?token="
 
+// Tests tagged @requires-email read the reset link from Mailpit; the
+// experimental suite (scripts/run-e2e-experiment.sh) excludes them.
+
 test("Password Recovery title is visible", async ({ page }) => {
   await page.goto("/recover-password")
 
@@ -29,10 +32,9 @@ test("Continue button is visible", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Continue" })).toBeVisible()
 })
 
-test("User can reset password successfully using the link", async ({
-  page,
-  request,
-}) => {
+test("User can reset password successfully using the link", {
+  tag: "@requires-email",
+}, async ({ page, request }) => {
   const fullName = "Test User"
   const email = randomEmail()
   const password = randomPassword()
@@ -80,7 +82,10 @@ test("Expired or invalid reset link", async ({ page }) => {
   await expect(page.getByText("Invalid token")).toBeVisible()
 })
 
-test("Weak new password validation", async ({ page, request }) => {
+test("Weak new password validation", { tag: "@requires-email" }, async ({
+  page,
+  request,
+}) => {
   const fullName = "Test User"
   const email = randomEmail()
   const password = randomPassword()

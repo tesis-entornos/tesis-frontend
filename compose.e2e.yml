@@ -139,6 +139,8 @@ services:
       VITE_API_URL: http://edge
       MAILPIT_HOST: http://mailpit:8025
       PLAYWRIGHT_HTML_HOST: 0.0.0.0
+      PLAYWRIGHT_WORKERS: ${PLAYWRIGHT_WORKERS:-}
+      PLAYWRIGHT_RETRIES: ${PLAYWRIGHT_RETRIES:-0}
       CI: ${CI:-}
     volumes:
       - ./blob-report:/app/blob-report

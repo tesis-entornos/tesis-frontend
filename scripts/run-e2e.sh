@@ -16,6 +16,6 @@ set -x
 docker compose -f compose.e2e.yml build
 docker compose -f compose.e2e.yml down -v --remove-orphans
 docker compose -f compose.e2e.yml up -d --wait edge
-docker compose -f compose.e2e.yml run --rm playwright bunx playwright test --reporter=list "$@" || status=$?
+docker compose -f compose.e2e.yml run --rm playwright bunx playwright test "$@" || status=$?
 docker compose -f compose.e2e.yml down -v --remove-orphans
 exit ${status:-0}

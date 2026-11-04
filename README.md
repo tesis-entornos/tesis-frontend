@@ -28,6 +28,16 @@ Build the backend image first (in `tesis-backend`: `docker build -t tesis-backen
 BACKEND_IMAGE=<repo>@sha256:<digest> ./scripts/run-e2e.sh
 ```
 
+Experimental suite (every test except those tagged `@requires-email`, which need Mailpit):
+
+```bash
+./scripts/run-e2e-experiment.sh
+```
+
+Options (environment): `PLAYWRIGHT_WORKERS` (default: Playwright's), `PLAYWRIGHT_RETRIES`
+(default 0). Every run writes a JSON report with the result of each test case to
+`test-results/results.json`.
+
 While the stack is up the app is available at <http://localhost:8888> (`EDGE_PORT`).
 The backend runs in production mode with secrets generated for each run (`E2E_*` variables);
 test users are created through the admin API.
