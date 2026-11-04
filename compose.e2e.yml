@@ -14,7 +14,7 @@
 # Usage: ./scripts/run-e2e.sh
 services:
   db:
-    image: postgres:18
+    image: postgres:18@sha256:3a4264520e121176619f54ff867d12774bc81e95e7b84db58d63bccdb6144b81
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d app"]
       interval: 5s
@@ -26,10 +26,10 @@ services:
       - POSTGRES_DB=app
 
   mailpit:
-    image: axllent/mailpit:v1.27
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
 
   redis:
-    image: redis:7.2-alpine
+    image: redis:7.2-alpine@sha256:2c933526722b4126a61d5c170f766dc159adf97682f0b1cbbc27b1666ba96d84
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -38,10 +38,10 @@ services:
 
   # S3 emulator and bucket initializer (see tesis-backend compose.yml)
   s3:
-    image: motoserver/moto:5.2.5
+    image: motoserver/moto:5.2.5@sha256:59a1965d845249b04def37a0e2565f9cc6c44543cb89b68e90f28f344b3b0d1a
 
   s3-init:
-    image: amazon/aws-cli:2.39.3
+    image: amazon/aws-cli:2.39.3@sha256:d557b3524475d70dd3104cf44d96568ee3188897b73a6ece2b37aa50e1af362f
     depends_on:
       - s3
     environment:
@@ -116,7 +116,7 @@ services:
 
   # Emulates CloudFront path routing (see e2e/edge.conf)
   edge:
-    image: nginx:1.28-alpine
+    image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
     volumes:
       - ./e2e/edge.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:

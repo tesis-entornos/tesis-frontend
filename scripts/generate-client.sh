@@ -18,7 +18,7 @@ case "$1" in
   *) cp "$1" openapi.json ;;
 esac
 
-docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.12 sh -c \
+docker run --rm -v "$PWD":/app -w /app oven/bun:1.3.12@sha256:8956c7667fa17beb6e3c664115e66bdacfe502da5d99603626e74c197bdef160 sh -c \
   "bun install --frozen-lockfile && bun run generate-client && bun run lint"
 
 printf 'backend_commit=%s\n' "$2" > src/client/SOURCE
