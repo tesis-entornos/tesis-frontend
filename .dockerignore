@@ -6,3 +6,4 @@ blob-report
 playwright-report
 test-results
 playwright/.auth
+e2e-runs

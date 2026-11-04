@@ -2,7 +2,11 @@
 # so every E2E run is tied to a backend image and a frontend image.
 #
 #   BACKEND_IMAGE=tesis-backend:local       (or registry/repo@sha256:...)
-#   FRONTEND_IMAGE=tesis-frontend:local     (built from this repo by default)
+#   FRONTEND_IMAGE=tesis-frontend:local     (or registry/repo@sha256:...)
+#
+# Application images are never built here: scripts/run-e2e.sh builds
+# tesis-frontend:local only when FRONTEND_IMAGE is not given. Images missing
+# locally are pulled (pull_policy: missing), so digest references work.
 #
 # The backend runs in production mode (no FASTAPI_ENV), as in AWS. Secrets come
 # from E2E_* variables that scripts/run-e2e.sh generates for every run.
@@ -54,7 +58,7 @@ services:
 
   prestart:
     image: ${BACKEND_IMAGE:-tesis-backend:local}
-    pull_policy: never
+    pull_policy: missing
     depends_on:
       db:
         condition: service_healthy
@@ -83,7 +87,7 @@ services:
 
   backend:
     image: ${BACKEND_IMAGE:-tesis-backend:local}
-    pull_policy: never
+    pull_policy: missing
     depends_on:
       prestart:
         condition: service_completed_successfully
@@ -108,8 +112,7 @@ services:
 
   frontend:
     image: ${FRONTEND_IMAGE:-tesis-frontend:local}
-    build:
-      context: .
+    pull_policy: missing
 
   # Emulates CloudFront path routing (see e2e/edge.conf)
   edge:

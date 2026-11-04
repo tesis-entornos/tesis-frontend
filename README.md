@@ -24,9 +24,14 @@ Docker with Compose v2. bun is optional (all scripts run it in Docker).
 Build the backend image first (in `tesis-backend`: `docker build -t tesis-backend:local .`), then:
 
 ```bash
-./scripts/run-e2e.sh                                   # uses tesis-backend:local
-BACKEND_IMAGE=<repo>@sha256:<digest> ./scripts/run-e2e.sh
+./scripts/run-e2e.sh            # tesis-backend:local + tesis-frontend:local (built from this repo)
+BACKEND_IMAGE=<repo>@sha256:<digest> FRONTEND_IMAGE=<repo>@sha256:<digest> ./scripts/run-e2e.sh
 ```
+
+With `FRONTEND_IMAGE` set nothing is built (only the Playwright runner); images missing locally
+are pulled. Every run writes `e2e-runs/<UTC timestamp>/metadata.json` (image references, the image
+ids actually used by the backend and frontend containers and their registry digests, frontend
+commit, client source, Playwright options, exit status) and a copy of the JSON report.
 
 Experimental suite (every test except those tagged `@requires-email`, which need Mailpit):
 
