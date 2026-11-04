@@ -71,6 +71,8 @@ services:
       EMAILS_FROM_EMAIL: info@example.com
       DATABASE_URL: postgresql://postgres:${E2E_POSTGRES_PASSWORD:?run scripts/run-e2e.sh}@db:5432/app
       REDIS_URL: redis://redis:6379/0
+      # Required with REDIS_URL since backend D3 (unique per environment)
+      CACHE_KEY_PREFIX: ${E2E_CACHE_KEY_PREFIX:-e2e}
       S3_BUCKET: tesis-files
       AWS_REGION: us-east-1
       S3_ENDPOINT_URL: http://s3:5000

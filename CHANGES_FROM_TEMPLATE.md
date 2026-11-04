@@ -46,6 +46,7 @@ Paths on the left are upstream paths; on the right, paths in this repository.
 | #   | Change | Reason |
 | --- | ------ | ------ |
 | R1  | Client regenerated from the backend contract exported in production mode (backend D6, commit `1091899`): no `PrivateService` / `/private` routes; adds `UtilsService.readiness` (`GET /api/v1/utils/ready`). `openapi.json` and `src/client/SOURCE` updated. | The client must match the API that is deployed; E2E tests no longer use the private routes (P1). |
+| R2  | `compose.e2e.yml`: backend gets `CACHE_KEY_PREFIX` (`E2E_CACHE_KEY_PREFIX`, default `e2e`). | The backend requires a prefix when `REDIS_URL` is set (backend D3). |
 
 ## Removed from upstream (not copied)
 
