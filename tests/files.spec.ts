@@ -29,7 +29,9 @@ async function openActions(page: Page, name: string) {
 
 test("Files page is accessible and shows correct title", async ({ page }) => {
   await page.goto("/files")
-  await expect(page.getByRole("heading", { name: "Files" })).toBeVisible()
+  await expect(
+    page.getByRole("heading", { name: "Files", exact: true }),
+  ).toBeVisible()
   await expect(page.getByText("Upload and manage your files")).toBeVisible()
   await expect(page.getByRole("button", { name: "Upload File" })).toBeVisible()
 })
